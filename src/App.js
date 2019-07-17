@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog.js'
+import BlogForm from './components/BlogForm.js'
 import blogService from './services/blogs.js'
 import loginService from './services/login.js'
 
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState([])
-  const [errorMessage, setErrorMessage] = useState('')
+  const [notification, setNotification] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [newTitle, setNewTitle] = useState('')
+  const [newAuthor, setNewAuthor] = useState('')
+  const [newUrl, setNewUrl] = useState('')
 
   useEffect(() => {
     blogService
@@ -24,7 +27,7 @@ const App = () => {
     if (loggerUserJSON) {
       const user = JSON.parse(loggerUserJSON)
       setUser(user)
-      //blogService.setToken(user.token)
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -38,13 +41,17 @@ const App = () => {
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
       )
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
 
     } catch (exception) {
-      setErrorMessage('wrong credentials')
-      setTimeout(() => { setErrorMessage(null) }, 5000)
+      setNotification({
+        message: 'wrong username of password',
+        type: 'error'
+      })
+      setTimeout(() => setNotification(null), 5000)
     }
   }
 
@@ -52,6 +59,41 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
   }
+
+  const addBlog = (event) => {
+    event.preventDefault()
+    
+    const newBlog = {
+      title: newTitle,
+      author: newAuthor,
+      url: newUrl
+    }
+
+    blogService
+      .create(newBlog)
+        .then(returnedBlog => {
+          setBlogs(blogs.concat(returnedBlog))
+          setNewTitle('')
+          setNewAuthor('')
+          setNewUrl('')
+          setNotification({
+            message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+            type: 'success'
+          })
+          setTimeout(() => setNotification(null), 5000)
+        })
+        .catch(error => {
+          setNotification({
+            message: `${newTitle} could not be added to server`,
+            type: 'error'
+          })
+          setTimeout(() => setNotification(null), 5000)
+        })
+  }
+
+  const handletitleChange = (event) => (setNewTitle(event.target.value))
+  const handleAuthorChange = (event) => (setNewAuthor(event.target.value))
+  const handleUrlChange = (event) => (setNewUrl(event.target.value))
 
   if (user === null) {
     return (
@@ -88,6 +130,18 @@ const App = () => {
       <p>{user.name} logged in 
         <button onClick={handleLogout}>logout</button>
       </p>
+
+      <h2>create new</h2>
+      <BlogForm
+        addBlog={addBlog}
+        title={newTitle}
+        handletitleChange={handletitleChange}
+        author={newAuthor}
+        handleAuthorChange={handleAuthorChange}
+        url={newUrl}
+        handleUrlChange={handleUrlChange}
+      />
+
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
