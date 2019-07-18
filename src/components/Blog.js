@@ -1,8 +1,33 @@
-import React from 'react'
-const Blog = ({ blog }) => (
-  <div>
-    {blog.title} {blog.author}
-  </div>
-)
+import React, { useState } from 'react'
+
+const Blog = ({ blog }) => {
+  const [dataVisible, setDataVisible] = useState(false)
+  
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5
+  }
+  
+  const handleBlogVisibility = () => {
+    setDataVisible(!dataVisible)
+  }
+  const showWhenVisible = { display: dataVisible ? '' : 'none' }
+  
+  return (
+    <div style={blogStyle}>
+      <div onClick={handleBlogVisibility}>
+        {blog.title} {blog.author}
+      </div>
+      <div style={showWhenVisible}>
+        <a href={blog.url}>{blog.url}</a> <br />
+        {blog.likes} likes <button onClick={null}>like</button> <br />
+        added by {blog.user.name}
+      </div>
+    </div>
+  )
+}
 
 export default Blog
