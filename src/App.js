@@ -65,36 +65,61 @@ const App = () => {
     setUser(null)
   }
 
-  const addBlog = (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
     
-    const newBlog = {
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl
-    }
+    try {
+      const newBlog = {
+        title: newTitle,
+        author: newAuthor,
+        url: newUrl
+      }
+      
+      const returnedBlog = await blogService.create(newBlog)
 
-    blogService
-      .create(newBlog)
-        .then(returnedBlog => {
-          blogFormRef.current.toggleVisibility()
-          setBlogs(blogs.concat(returnedBlog))
-          setNewTitle('')
-          setNewAuthor('')
-          setNewUrl('')
-          setNotification({
-            message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
-            type: 'success'
-          })
-          setTimeout(() => setNotification(null), 5000)
-        })
-        .catch(error => {
-          setNotification({
-            message: `${newTitle} could not be added to server`,
-            type: 'error'
-          })
-          setTimeout(() => setNotification(null), 5000)
-        })
+      blogFormRef.current.toggleVisibility()
+      setBlogs(blogs.concat(returnedBlog))
+      setNewTitle('')
+      setNewAuthor('')
+      setNewUrl('')
+      setNotification({
+        message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+        type: 'success'
+      })
+      setTimeout(() => setNotification(null), 5000)
+      
+    } catch (exception) {
+      setNotification({
+        message: `${newTitle} could not be added to server`,
+        type: 'error'
+      })
+      setTimeout(() => setNotification(null), 5000)
+    }
+  }
+
+  const addLikeOf = async id => {
+    try {
+      const blogFound = blogs.find(blog => blog.id === id)
+      const updatedLikesBLog = {
+        title: blogFound.title,
+        author: blogFound.author,
+        url: blogFound.url,
+        user: blogFound.user.id,
+        likes: blogFound.likes + 1,
+      }
+
+      const updatedBlog = await blogService.update(id, updatedLikesBLog)
+      setBlogs(blogs.map(
+        b => b.id !== id ? b  : { ...updatedBlog, user: blogFound.user }
+      ))     
+      
+    } catch (exception) {
+      setNotification({
+        message: 'could not add like',
+        type: 'error'
+      })
+      setTimeout(() => setNotification(null), 5000)
+    }
   }
 
   const handleTitleChange = (event) => (setNewTitle(event.target.value))
@@ -141,7 +166,7 @@ const App = () => {
             </Togglable>
     
             {blogs.map(blog =>
-              <Blog key={blog.id} blog={blog} />
+              <Blog key={blog.id} blog={blog} addLike={() => addLikeOf(blog.id)} />
             )}
           </div>
       }

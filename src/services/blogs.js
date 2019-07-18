@@ -7,9 +7,9 @@ const setToken = newToken => {
   token = `bearer ${newToken}`
 }
 
-const getAll = () => {
-  const request = axios.get(baseUrl)
-  return request.then(response => response.data)
+const getAll = async () => {
+  const res = await axios.get(baseUrl)
+  return res.data
 }
 
 const create = async newObject => {
@@ -21,8 +21,20 @@ const create = async newObject => {
   return res.data
 }
 
+const update = async (id, newObject) => {
+  const res = await axios.put(`${baseUrl}/${id}`, newObject)
+  return res.data
+}
+
+const remove = async id => {
+  const res = axios.delete(`${baseUrl}/${id}`)
+  return res.data
+}
+
 export default { 
-  getAll, 
-  create, 
+  getAll,
+  create,
+  update,
+  remove,
   setToken 
 }
