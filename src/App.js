@@ -74,11 +74,19 @@ const App = () => {
         author: newAuthor,
         url: newUrl
       }
-      
+
       const returnedBlog = await blogService.create(newBlog)
+      const blogWithUserDetails = {
+        ...returnedBlog,
+        user: {
+          id: returnedBlog.user,
+          name: user.name,
+          username: user.username
+        }
+      }
 
       blogFormRef.current.toggleVisibility()
-      setBlogs(blogs.concat(returnedBlog))
+      setBlogs(blogs.concat(blogWithUserDetails))
       setNewTitle('')
       setNewAuthor('')
       setNewUrl('')
@@ -116,6 +124,29 @@ const App = () => {
     } catch (exception) {
       setNotification({
         message: 'could not add like',
+        type: 'error'
+      })
+      setTimeout(() => setNotification(null), 5000)
+    }
+  }
+
+  const delBlogOf = async (id, blog) => {
+    try {
+      const confirmDelete = window.confirm(`remove ${blog.title} by ${blog.author}`)
+      if (confirmDelete) {
+        // eslint-disable-next-line
+        const res = await blogService.remove(id)
+
+        setBlogs(blogs.filter(b => b.id !== id))
+        setNotification({
+          message: `Deleted ${blog.title}`,
+          type: 'success'
+        })
+        setTimeout(() => setNotification(null), 5000)  
+      }
+    } catch (exception) {
+      setNotification({
+        message: `could not remove blog`,
         type: 'error'
       })
       setTimeout(() => setNotification(null), 5000)
@@ -165,8 +196,13 @@ const App = () => {
               />
             </Togglable>
     
-            {blogs.map(blog =>
-              <Blog key={blog.id} blog={blog} addLike={() => addLikeOf(blog.id)} />
+            {blogs
+              .sort((a, b) => b.likes - a.likes)
+              .map(blog =>
+                <Blog key={blog.id} blog={blog} 
+                addLike={() => addLikeOf(blog.id)} 
+                delBlog={() => delBlogOf(blog.id, blog)}
+                currentUsername={user.username}/>
             )}
           </div>
       }
