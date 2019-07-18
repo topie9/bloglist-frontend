@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog.js'
 import BlogForm from './components/BlogForm.js'
+import Notification from './components/Notification.js'
 import blogService from './services/blogs.js'
 import loginService from './services/login.js'
 
@@ -48,7 +49,7 @@ const App = () => {
 
     } catch (exception) {
       setNotification({
-        message: 'wrong username of password',
+        message: 'wrong username or password',
         type: 'error'
       })
       setTimeout(() => setNotification(null), 5000)
@@ -99,6 +100,12 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+
+        <Notification 
+        message={(notification) ? notification.message : null} 
+        type={(notification) ? notification.type : null}
+      />
+
         <form onSubmit={handleLogin}>
           <div>
             username
@@ -127,6 +134,12 @@ const App = () => {
   return (
     <div>  
       <h2>blogs</h2>
+
+      <Notification 
+        message={(notification) ? notification.message : null} 
+        type={(notification) ? notification.type : null}
+      />
+
       <p>{user.name} logged in 
         <button onClick={handleLogout}>logout</button>
       </p>
