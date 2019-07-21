@@ -5,7 +5,7 @@ import LoginForm from './components/LoginForm.js'
 import Notification from './components/Notification.js'
 import blogService from './services/blogs.js'
 import loginService from './services/login.js'
-import Togglable from './components/Togglable.js';
+import Togglable from './components/Togglable.js'
 
 
 const App = () => {
@@ -67,7 +67,7 @@ const App = () => {
 
   const addBlog = async (event) => {
     event.preventDefault()
-    
+
     try {
       const newBlog = {
         title: newTitle,
@@ -95,7 +95,7 @@ const App = () => {
         type: 'success'
       })
       setTimeout(() => setNotification(null), 5000)
-      
+
     } catch (exception) {
       setNotification({
         message: `${newTitle} could not be added to server`,
@@ -119,8 +119,8 @@ const App = () => {
       const updatedBlog = await blogService.update(id, updatedLikesBLog)
       setBlogs(blogs.map(
         b => b.id !== id ? b  : { ...updatedBlog, user: blogFound.user }
-      ))     
-      
+      ))
+
     } catch (exception) {
       setNotification({
         message: 'could not add like',
@@ -142,11 +142,11 @@ const App = () => {
           message: `Deleted ${blog.title}`,
           type: 'success'
         })
-        setTimeout(() => setNotification(null), 5000)  
+        setTimeout(() => setNotification(null), 5000)
       }
     } catch (exception) {
       setNotification({
-        message: `could not remove blog`,
+        message: 'could not remove blog',
         type: 'error'
       })
       setTimeout(() => setNotification(null), 5000)
@@ -162,49 +162,49 @@ const App = () => {
 
   return (
     <div>
-      <Notification 
-      message={(notification) ? notification.message : null} 
-      type={(notification) ? notification.type : null}
+      <Notification
+        message={(notification) ? notification.message : null}
+        type={(notification) ? notification.type : null}
       />
 
-      {user === null 
+      {user === null
         ? <div>
-            <LoginForm 
-              handleLogin={handleLogin}
-              username={username}
-              handleUsernameChange={handleUsernameChange}
-              password={password}
-              handlePasswordChange={handlePasswordChange}
-            />
-          </div>
-          
+          <LoginForm
+            handleLogin={handleLogin}
+            username={username}
+            handleUsernameChange={handleUsernameChange}
+            password={password}
+            handlePasswordChange={handlePasswordChange}
+          />
+        </div>
+
         : <div>
-            <h2>blogs</h2>   
-            <p>{user.name} logged in 
-              <button onClick={handleLogout}>logout</button>
-            </p>
-            
-            <Togglable buttonLabel="new blog" ref={blogFormRef}>
-              <BlogForm
-                addBlog={addBlog}
-                title={newTitle}
-                handleTitleChange={handleTitleChange}
-                author={newAuthor}
-                handleAuthorChange={handleAuthorChange}
-                url={newUrl}
-                handleUrlChange={handleUrlChange}
-              />
-            </Togglable>
-    
-            {blogs
-              .sort((a, b) => b.likes - a.likes)
-              .map(blog =>
-                <Blog key={blog.id} blog={blog} 
-                addLike={() => addLikeOf(blog.id)} 
+          <h2>blogs</h2>
+          <p>{user.name} logged in
+            <button onClick={handleLogout}>logout</button>
+          </p>
+
+          <Togglable buttonLabel="new blog" ref={blogFormRef}>
+            <BlogForm
+              addBlog={addBlog}
+              title={newTitle}
+              handleTitleChange={handleTitleChange}
+              author={newAuthor}
+              handleAuthorChange={handleAuthorChange}
+              url={newUrl}
+              handleUrlChange={handleUrlChange}
+            />
+          </Togglable>
+
+          {blogs
+            .sort((a, b) => b.likes - a.likes)
+            .map(blog =>
+              <Blog key={blog.id} blog={blog}
+                addLike={() => addLikeOf(blog.id)}
                 delBlog={() => delBlogOf(blog.id, blog)}
                 currentUsername={user.username}/>
             )}
-          </div>
+        </div>
       }
     </div>
   )

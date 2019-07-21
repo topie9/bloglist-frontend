@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, addLike, delBlog, currentUsername }) => {
   const [dataVisible, setDataVisible] = useState(false)
-  
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -10,12 +11,12 @@ const Blog = ({ blog, addLike, delBlog, currentUsername }) => {
     borderWidth: 1,
     marginBottom: 5
   }
-  
+
   const handleBlogVisibility = () => {
     setDataVisible(!dataVisible)
   }
   const showWhenVisible = { display: dataVisible ? '' : 'none' }
-  
+
   return (
     <div style={blogStyle}>
       <div onClick={handleBlogVisibility}>
@@ -31,6 +32,13 @@ const Blog = ({ blog, addLike, delBlog, currentUsername }) => {
       </div>
     </div>
   )
+}
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  addLike: PropTypes.func.isRequired,
+  delBlog: PropTypes.func.isRequired,
+  currentUsername: PropTypes.string.isRequired
 }
 
 export default Blog
