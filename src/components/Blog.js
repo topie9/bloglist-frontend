@@ -18,7 +18,7 @@ const Blog = ({ blog, addLike, delBlog, currentUsername }) => {
   const showWhenVisible = { display: dataVisible ? '' : 'none' }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       <div className='clickableContent' onClick={handleBlogVisibility}>
         {blog.title} {blog.author}
       </div>
