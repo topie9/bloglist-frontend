@@ -6,17 +6,18 @@ import Notification from './components/Notification.js'
 import blogService from './services/blogs.js'
 import loginService from './services/login.js'
 import Togglable from './components/Togglable.js'
+import { useField } from './hooks'
 
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [notification, setNotification] = useState('')
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const username = useField('text')
+  const password = useField('password')
   const [user, setUser] = useState(null)
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
+  const newTitle = useField('text')
+  const newAuthor = useField('text')
+  const newUrl = useField('text')
 
   const blogFormRef = React.createRef()
 
@@ -40,7 +41,8 @@ const App = () => {
     event.preventDefault()
     try {
       const user = await loginService.login({
-        username, password
+        username: username.value,
+        password: password.value
       })
 
       window.localStorage.setItem(
@@ -48,8 +50,8 @@ const App = () => {
       )
       blogService.setToken(user.token)
       setUser(user)
-      setUsername('')
-      setPassword('')
+      username.reset()
+      password.reset()
 
     } catch (exception) {
       setNotification({
@@ -70,9 +72,9 @@ const App = () => {
 
     try {
       const newBlog = {
-        title: newTitle,
-        author: newAuthor,
-        url: newUrl
+        title: newTitle.value,
+        author: newAuthor.value,
+        url: newUrl.value
       }
 
       const returnedBlog = await blogService.create(newBlog)
@@ -87,9 +89,9 @@ const App = () => {
 
       blogFormRef.current.toggleVisibility()
       setBlogs(blogs.concat(blogWithUserDetails))
-      setNewTitle('')
-      setNewAuthor('')
-      setNewUrl('')
+      newTitle.reset()
+      newAuthor.reset()
+      newUrl.reset()
       setNotification({
         message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
         type: 'success'
@@ -153,12 +155,6 @@ const App = () => {
     }
   }
 
-  const handleTitleChange = (event) => (setNewTitle(event.target.value))
-  const handleAuthorChange = (event) => (setNewAuthor(event.target.value))
-  const handleUrlChange = (event) => (setNewUrl(event.target.value))
-  const handleUsernameChange = (event) => (setUsername(event.target.value))
-  const handlePasswordChange = (event) => (setPassword(event.target.value))
-
 
   return (
     <div>
@@ -172,9 +168,7 @@ const App = () => {
           <LoginForm
             handleLogin={handleLogin}
             username={username}
-            handleUsernameChange={handleUsernameChange}
             password={password}
-            handlePasswordChange={handlePasswordChange}
           />
         </div>
 
@@ -188,11 +182,8 @@ const App = () => {
             <BlogForm
               addBlog={addBlog}
               title={newTitle}
-              handleTitleChange={handleTitleChange}
               author={newAuthor}
-              handleAuthorChange={handleAuthorChange}
               url={newUrl}
-              handleUrlChange={handleUrlChange}
             />
           </Togglable>
 

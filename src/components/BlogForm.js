@@ -1,8 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const BlogForm = ( { addBlog, title, handleTitleChange,
-  author, handleAuthorChange, url, handleUrlChange }) => {
+const BlogForm = ( { addBlog, title, author, url }) => {
+
+  title = { ...title, reset: null }
+  author = { ...author, reset: null }
+  url = { ...url, reset: null }
 
   return (
     <div>
@@ -11,15 +14,15 @@ const BlogForm = ( { addBlog, title, handleTitleChange,
       <form onSubmit={addBlog}>
         <div>
           title:
-          <input value={title} onChange={handleTitleChange} />
+          <input {...title} />
         </div>
         <div>
           author:
-          <input value={author} onChange={handleAuthorChange} />
+          <input {...author} />
         </div>
         <div>
           url:
-          <input value={url} onChange={handleUrlChange} />
+          <input {...url} />
         </div>
         <div>
           <button type="submit">create</button>
@@ -31,12 +34,6 @@ const BlogForm = ( { addBlog, title, handleTitleChange,
 
 BlogForm.propTypes = {
   addBlog: PropTypes.func.isRequired,
-  handleTitleChange: PropTypes.func.isRequired,
-  handleAuthorChange: PropTypes.func.isRequired,
-  handleUrlChange: PropTypes.func.isRequired,
-  title: PropTypes.string.isRequired,
-  author: PropTypes.string,
-  url: PropTypes.string.isRequired
 }
 
 export default BlogForm
